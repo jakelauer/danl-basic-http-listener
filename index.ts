@@ -1,3 +1,4 @@
+import bodyParser from 'body-parser';
 import express from 'express';
 import fs from 'fs';
 import os from 'os';
@@ -14,6 +15,8 @@ const LOG_FILE_LOCATION = "./log.txt"
 
 
 const app = express();
+app.use(bodyParser.json())
+app.use(express.urlencoded({extended:true}))
 
 // Create the logfile if it doesn't exist
 const logFile = path.resolve(process.cwd(), LOG_FILE_LOCATION);
@@ -29,21 +32,22 @@ const logMessageWithDatetime = (url: string, data: any) => {
 	}
 
 	// Convert the body to a nice-looking JSON string
-	const prettyLogString = JSON.stringify(toLog, null, 4);
-
+	// const prettyLogString = JSON.stringify(toLog, null, 4);
+	console.log(data)
+	
 	// Append it to the log file
 	fs.appendFileSync(logFile, (new Date()).toString());
 	fs.appendFileSync(logFile, os.EOL);
-	fs.appendFileSync(logFile, prettyLogString);
+	// fs.appendFileSync(logFile, prettyLogString);
 	fs.appendFileSync(logFile, os.EOL);
 }
 
 // Register this server to listen for post requests at /some/url/goes/here
-app.post("/some/url/goes/here", (request, response) => {
-	logMessageWithDatetime(request.url, request.body);
+app.post("/duplicati-test", (request, response) => {
+	logMessageWithDatetime(request.url, request);
 
 	response.status(200).send({
-		message: "return some data here"
+		message: "POST received"
 	})
 });
 
